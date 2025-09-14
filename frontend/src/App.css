@@ -1,34 +1,210 @@
+.App {
+  text-align: center;
+}
+
 .App-logo {
-    height: 40vmin;
-    pointer-events: none;
+  height: 40vmin;
+  pointer-events: none;
 }
 
 @media (prefers-reduced-motion: no-preference) {
-    .App-logo {
-        animation: App-logo-spin infinite 20s linear;
-    }
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
 }
 
 .App-header {
-    background-color: #0f0f10;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
-    color: white;
+  background-color: #282c34;
+  padding: 20px;
+  color: white;
+  min-height: 50vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
 }
 
 .App-link {
-    color: #61dafb;
+  color: #61dafb;
 }
 
 @keyframes App-logo-spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Custom styles for Spotify app */
+.spotify-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1DB954 0%, #1ed760 100%);
+}
+
+.spotify-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.spotify-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+}
+
+.spotify-button {
+  background: linear-gradient(135deg, #1DB954 0%, #1ed760 100%);
+  border: none;
+  border-radius: 50px;
+  color: white;
+  font-weight: 600;
+  padding: 12px 30px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.spotify-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(29, 185, 84, 0.3);
+}
+
+.spotify-button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.similarity-score {
+  font-size: 3rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.feature-bar {
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #1DB954 0%, #1ed760 100%);
+  transition: width 0.5s ease;
+}
+
+.genre-tag {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin: 4px;
+  display: inline-block;
+}
+
+.shared-item {
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  padding: 12px;
+  margin: 8px 0;
+  transition: all 0.3s ease;
+}
+
+.shared-item:hover {
+  background: rgba(255, 255, 255, 1);
+  transform: translateX(5px);
+}
+
+.loading-spinner {
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #1DB954;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.results-container {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 40px 20px;
+}
+
+.results-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  padding: 30px;
+  margin: 20px 0;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.user-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 4px solid white;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.compatibility-meter {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  border: 15px solid #f3f3f3;
+  position: relative;
+  margin: 0 auto;
+}
+
+.compatibility-fill {
+  position: absolute;
+  top: -15px;
+  left: -15px;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  border: 15px solid transparent;
+  border-top-color: #1DB954;
+  transform-origin: center;
+  transition: transform 1s ease;
+}
+
+@media (max-width: 768px) {
+  .spotify-container {
+    padding: 20px 10px;
+  }
+  
+  .results-card {
+    padding: 20px;
+    margin: 10px 0;
+  }
+  
+  .similarity-score {
+    font-size: 2rem;
+  }
+  
+  .user-avatar {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .compatibility-meter {
+    width: 150px;
+    height: 150px;
+  }
+  
+  .compatibility-fill {
+    width: 150px;
+    height: 150px;
+  }
 }
