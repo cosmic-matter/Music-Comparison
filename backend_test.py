@@ -374,7 +374,7 @@ class SpotifyBackendTester:
                 ("/auth/spotify", "GET", 200),
                 ("/users", "GET", 200),
                 ("/user/test-id/profile", "GET", 400),  # Should return 400 for invalid user
-                ("/compare", "POST", 400)  # Should return 400 for missing params
+                ("/compare", "POST", 422)  # Should return 422 for missing params (FastAPI validation)
             ]
             
             all_passed = True
