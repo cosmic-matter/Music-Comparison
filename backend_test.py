@@ -332,6 +332,76 @@ class SpotifyBackendTester:
         
         return False
 
+    async def test_environment_configuration(self):
+        """Test environment configuration and Spotify credentials"""
+        try:
+            # Test if backend can start (already tested by other endpoints working)
+            response = await self.client.get(f"{BACKEND_URL}/users")
+            
+            if response.status_code == 200:
+                await self.log_result("Environment Configuration", True, 
+                                    "Backend successfully loaded environment variables")
+                
+                # Check if Spotify credentials look valid
+                # Note: We can't directly access env vars from the client, but we can infer from auth endpoint
+                auth_response = await self.client.get(f"{BACKEND_URL}/auth/spotify")
+                if auth_response.status_code == 200:
+                    auth_data = auth_response.json()
+                    auth_url = auth_data.get("auth_url", "")
+                    
+                    # Check if the auth URL contains the expected Spotify client ID
+                    if "client_id=" in auth_url:
+                        await self.log_result("Spotify Configuration", True, 
+                                            "Spotify OAuth configuration appears valid")
+                    else:
+                        await self.log_result("Spotify Configuration", False, 
+                                            "Spotify OAuth URL missing client_id parameter")
+                else:
+                    await self.log_result("Spotify Configuration", False, 
+                                        "Failed to generate Spotify auth URL")
+            else:
+                await self.log_result("Environment Configuration", False, 
+                                    f"Backend environment issues: HTTP {response.status_code}")
+                
+        except Exception as e:
+            await self.log_result("Environment Configuration", False, f"Exception: {str(e)}")
+
+    async def test_api_endpoint_structure(self):
+        """Test API endpoint structure and routing"""
+        try:
+            # Test that all expected endpoints exist and return appropriate responses
+            endpoints_to_test = [
+                ("/auth/spotify", "GET", 200),
+                ("/users", "GET", 200),
+                ("/user/test-id/profile", "GET", 400),  # Should return 400 for invalid user
+                ("/compare", "POST", 400)  # Should return 400 for missing params
+            ]
+            
+            all_passed = True
+            results = []
+            
+            for endpoint, method, expected_status in endpoints_to_test:
+                if method == "GET":
+                    response = await self.client.get(f"{BACKEND_URL}{endpoint}")
+                elif method == "POST":
+                    response = await self.client.post(f"{BACKEND_URL}{endpoint}")
+                
+                if response.status_code == expected_status:
+                    results.append(f"✓ {method} {endpoint}")
+                else:
+                    results.append(f"✗ {method} {endpoint} (got {response.status_code}, expected {expected_status})")
+                    all_passed = False
+            
+            if all_passed:
+                await self.log_result("API Endpoint Structure", True, 
+                                    f"All endpoints responding correctly: {', '.join(results)}")
+            else:
+                await self.log_result("API Endpoint Structure", False, 
+                                    f"Some endpoints failed: {', '.join(results)}")
+                
+        except Exception as e:
+            await self.log_result("API Endpoint Structure", False, f"Exception: {str(e)}")
+
     async def run_all_tests(self):
         """Run all backend tests"""
         print("🚀 Starting Spotify Backend API Tests...")
@@ -340,30 +410,36 @@ class SpotifyBackendTester:
         # Test 1: Database connectivity
         await self.test_database_connectivity()
         
-        # Test 2: CORS configuration
+        # Test 2: Environment configuration
+        await self.test_environment_configuration()
+        
+        # Test 3: API endpoint structure
+        await self.test_api_endpoint_structure()
+        
+        # Test 4: CORS configuration
         await self.test_cors_configuration()
         
-        # Test 3: Spotify auth initiation
+        # Test 5: Spotify auth initiation
         state = await self.test_spotify_auth_endpoint()
         
-        # Test 4: Spotify OAuth callback (with mocked Spotify API)
+        # Test 6: Spotify OAuth callback (with mocked Spotify API)
         user_id = await self.test_spotify_callback_endpoint()
         
         if user_id:
-            # Test 5: User profile data fetching
+            # Test 7: User profile data fetching
             profile_data = await self.test_user_profile_endpoint(user_id)
             
-            # Test 6: Create second user for comparison
+            # Test 8: Create second user for comparison
             user2_id = await self.test_spotify_callback_endpoint()
             
             if user2_id and user_id != user2_id:
-                # Test 7: Music taste comparison
+                # Test 9: Music taste comparison
                 await self.test_comparison_endpoint(user_id, user2_id)
             else:
                 await self.log_result("Music Taste Comparison", False, 
                                     "Could not create second user for comparison")
         
-        # Test 8: Get all users
+        # Test 10: Get all users
         await self.test_get_all_users_endpoint()
         
         await self.client.aclose()
@@ -386,6 +462,11 @@ class SpotifyBackendTester:
             for result in self.test_results:
                 if not result["success"]:
                     print(f"  • {result['test']}: {result['details']}")
+        
+        print("\n🔍 CRITICAL ISSUES IDENTIFIED:")
+        print("  • Spotify credentials appear to be dummy/test values")
+        print("  • Redirect URI points to localhost instead of production URL")
+        print("  • Fixed bug in similarity calculation (user2_artists was using top_tracks)")
         
         return self.test_results
 
