@@ -183,7 +183,7 @@ def calculate_similarity(user1_data: Dict, user2_data: Dict) -> Dict:
     
     # Get shared artists
     user1_artists = {artist['id']: artist for artist in user1_data['top_artists']}
-    user2_artists = {artist['id']: artist for artist in user2_data['top_tracks']}
+    user2_artists = {artist['id']: artist for artist in user2_data['top_artists']}
     shared_artists = []
     
     for artist_id, artist in user1_artists.items():
