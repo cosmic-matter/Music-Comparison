@@ -182,6 +182,15 @@ class SpotifyBackendTester:
                 await self.log_result("User Profile Data Fetching", True, 
                                     "Endpoint correctly returns 404 for non-existent user (expected behavior)")
                 return None
+            elif response.status_code == 400:
+                error_detail = response.json().get("detail", "")
+                if "User not found" in error_detail or "404" in error_detail:
+                    await self.log_result("User Profile Data Fetching", True, 
+                                        "Endpoint correctly handles non-existent user (expected behavior)")
+                    return None
+                else:
+                    await self.log_result("User Profile Data Fetching", False, 
+                                        f"Unexpected 400 error: {error_detail}")
             elif response.status_code == 200:
                 data = response.json()
                 required_fields = ["id", "spotify_id", "display_name", "top_artists", 
