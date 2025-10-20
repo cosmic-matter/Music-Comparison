@@ -13,6 +13,12 @@ export default defineConfig({
   server: {
     port: 3000,
     host: '0.0.0.0',
+    allowedHosts: [
+      'beat-buddy-3.preview.emergentagent.com',
+      '.emergentagent.com',
+      'localhost',
+      '127.0.0.1'
+    ]
   },
   build: {
     outDir: 'build',
