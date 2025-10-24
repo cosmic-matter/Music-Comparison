@@ -369,10 +369,7 @@ function App() {
       
       if (code) {
         try {
-          const response = await axios.post(`${API}/auth/spotify/callback`, {
-            code,
-            state: state || 'state'
-          });
+          const response = await axios.post(`${API}/auth/spotify/callback?code=${code}&state=${state || 'state'}`);
           
           if (response.data.success) {
             const userData = {
