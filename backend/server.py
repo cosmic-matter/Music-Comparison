@@ -266,8 +266,10 @@ async def spotify_auth():
     auth_url = f"https://accounts.spotify.com/authorize?{urlencode(params)}"
     return {"auth_url": auth_url, "state": state}
 
+from fastapi import Query
+
 @api_router.post("/auth/spotify/callback")
-async def spotify_callback(code: str, state: str):
+async def spotify_callback(code: str = Query(...), state: str = Query(...)):
     """Handle Spotify OAuth callback"""
     try:
         # Exchange code for tokens
