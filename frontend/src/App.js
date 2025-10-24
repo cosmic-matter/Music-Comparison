@@ -29,10 +29,7 @@ const SpotifyLogin = ({ onLogin, userLabel }) => {
           
           if (code) {
             try {
-              const callbackResponse = await axios.post(`${API}/auth/spotify/callback`, {
-                code,
-                state: 'state'
-              });
+              const callbackResponse = await axios.post(`${API}/auth/spotify/callback?code=${code}&state=state`);
               
               if (callbackResponse.data.success) {
                 onLogin({
