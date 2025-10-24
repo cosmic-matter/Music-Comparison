@@ -114,7 +114,9 @@ async def get_spotify_token(code: str):
         if response.status_code == 200:
             return response.json()
         else:
-            raise HTTPException(status_code=400, detail="Failed to get Spotify token")
+            error_detail = f"Spotify API error: {response.status_code} - {response.text}"
+            logger.error(error_detail)
+            raise HTTPException(status_code=400, detail=error_detail)
 
 async def refresh_spotify_token(refresh_token: str):
     """Refresh Spotify access token"""
