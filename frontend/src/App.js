@@ -12,38 +12,17 @@ const SpotifyLogin = ({ onLogin, userLabel }) => {
   const handleLogin = async () => {
     setLoading(true);
     try {
+      // Generate and store a random state for CSRF protection
+      const state = Math.random().toString(36).substring(2, 15);
+      sessionStorage.setItem('spotify_oauth_state', state);
+      sessionStorage.setItem('spotify_login_user', userLabel);
+      
       const response = await axios.get(`${API}/auth/spotify`);
       const { auth_url } = response.data;
       
-      // Open Spotify auth in popup
-      const popup = window.open(auth_url, 'spotify-auth', 'width=500,height=600');
+      // Replace the current URL with Spotify auth (proper redirect)
+      window.location.href = auth_url.replace('mock_state_456', state);
       
-      // Listen for popup to close and get the code
-      const checkClosed = setInterval(async () => {
-        if (popup.closed) {
-          clearInterval(checkClosed);
-          // Check URL for auth code (this is simplified)
-          // In a real app, you'd handle this differently
-          const urlParams = new URLSearchParams(window.location.search);
-          const code = urlParams.get('code');
-          
-          if (code) {
-            try {
-              const callbackResponse = await axios.post(`${API}/auth/spotify/callback?code=${code}&state=state`);
-              
-              if (callbackResponse.data.success) {
-                onLogin({
-                  id: callbackResponse.data.user_id,
-                  name: callbackResponse.data.display_name
-                });
-              }
-            } catch (error) {
-              console.error('Callback error:', error);
-            }
-          }
-          setLoading(false);
-        }
-      }, 1000);
     } catch (error) {
       console.error('Login error:', error);
       setLoading(false);
