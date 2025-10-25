@@ -345,10 +345,26 @@ function App() {
       const urlParams = new URLSearchParams(window.location.search);
       const code = urlParams.get('code');
       const state = urlParams.get('state');
+      const error = urlParams.get('error');
       
-      if (code) {
+      // Check for OAuth errors
+      if (error) {
+        setError(`Spotify authentication error: ${error}`);
+        return;
+      }
+      
+      if (code && state) {
         try {
-          const response = await axios.post(`${API}/auth/spotify/callback?code=${code}&state=${state || 'state'}`);
+          // Verify state to prevent CSRF attacks
+          const storedState = sessionStorage.getItem('spotify_oauth_state');
+          const loginUser = sessionStorage.getItem('spotify_login_user');
+          
+          if (state !== storedState) {
+            setError('Invalid state parameter. Possible CSRF attack.');
+            return;
+          }
+          
+          const response = await axios.post(`${API}/auth/spotify/callback?code=${code}&state=${state}`);
           
           if (response.data.success) {
             const userData = {
@@ -356,14 +372,16 @@ function App() {
               name: response.data.display_name
             };
             
-            // Determine which user to set based on current state
-            if (!user1) {
+            // Set user based on stored login context
+            if (loginUser === 'Connect User 1' || !user1) {
               setUser1(userData);
-            } else if (!user2) {
+            } else if (loginUser === 'Connect User 2' || !user2) {
               setUser2(userData);
             }
             
-            // Clear URL params
+            // Clean up
+            sessionStorage.removeItem('spotify_oauth_state');
+            sessionStorage.removeItem('spotify_login_user');
             window.history.replaceState({}, document.title, window.location.pathname);
           }
         } catch (error) {
