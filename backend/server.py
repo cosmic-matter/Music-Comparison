@@ -254,7 +254,7 @@ def calculate_similarity(user1_data: Dict, user2_data: Dict) -> Dict:
 @api_router.get("/auth/spotify")
 async def spotify_auth():
     """Initiate Spotify OAuth"""
-    state = secrets.token_urlsafe(16)
+    state = secrets.token_urlsafe(32)  # Longer, more secure state
     scope = "user-read-private user-read-email user-top-read"
     
     params = {
